@@ -2,6 +2,7 @@ import requests
 import streamlit as st
 import asyncio
 import os
+import json
 
 from session_state import get
 from questionaire import main_page
@@ -40,11 +41,16 @@ async def get_name(id_token):
 def main(user_id, user_email, user_name):
     main_page(user_id, user_email, user_name)
 
+def get_google_creds():
+    creds_file = open('google_client_creds.json')
+    creds_json = json.load(creds_file)
+    client_id = creds_json['web']['client_id']
+    client_secret = creds_json['web']['client_secret']
+    redirect_uri = creds_json['web']['redirect_uris'][0]
+    return client_id, client_secret, redirect_uri
 
 if __name__ == '__main__':
-    client_id = os.getenv('GOOGLE_CLIENT_ID')
-    client_secret = os.getenv('GOOGLE_CLIENT_SECRET')
-    redirect_uri = os.getenv('REDIRECT_URI')
+    client_id, client_secret, redirect_uri = get_google_creds()
 
     client = GoogleOAuth2(client_id, client_secret)
     authorization_url = asyncio.run(
