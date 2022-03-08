@@ -1,8 +1,15 @@
+from csv import reader
 import pandas as pd
 import streamlit as st
 from datetime import date
 
-admin_users = ['misra.runit@gmail.com']
+admin_users = ['runit.misra@infracloud.io', 'gaurav@infracloud.io']
+
+def csv_lookup(csv_file, lookup_value):
+    file = open(csv_file)
+    for row in reader(file):
+        if lookup_value in row[0]:
+            return row[1]
 
 def is_admin(user_email):
     if user_email in admin_users:
@@ -16,7 +23,7 @@ def build_sidebar(user_email):
         sidebar = st.sidebar.selectbox("Select", ['Questionaire'])
     return sidebar
 
-def path_to_image_html(word):
+def path_to_image_html(word='Positive'):
     score = {'Positive': 'https://upload.wikimedia.org/wikipedia/commons/2/2d/Basic_green_dot.png',
         'Negative': 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Basic_red_dot.png',
         'Neutral': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Location_dot_orange.svg/768px-Location_dot_orange.svg.png'}
@@ -60,7 +67,7 @@ def main_page(user_email, user_name):
     data = pd.read_csv('demo.csv')
     team_data = pd.read_csv('teams.csv')
     page = build_sidebar(user_email)
-
+    team_names = list(team_data.Team.unique())
     
 
     if(page == "Questionaire"):
@@ -71,7 +78,7 @@ def main_page(user_email, user_name):
                 "5) Learning",
                 "6) Fun"]
 
-        team_names = list(team_data.Team.unique())
+        
         st.write('<h3> Select your team: </h3>', unsafe_allow_html=True)
         current_team = st.selectbox("You can add responses for multiple teams", team_names)
                 
@@ -143,14 +150,32 @@ def main_page(user_email, user_name):
                 rate.append(resp)
             storage[tm] = rate
             rate = []
-        new_data = pd.DataFrame(storage, index=questions).T        
+        new_data = pd.DataFrame(storage, index=questions)
         st.subheader('Traffic light view')
-        st.markdown(new_data.to_html(escape=False,formatters=dict(Team_work=path_to_image_html, 
-                                                    Pawns_or_Players=path_to_image_html,
-                                                    Delivering_Value_Being_Valued=path_to_image_html,
-                                                    Speed=path_to_image_html,
-                                                    Learning=path_to_image_html,
-                                                    Fun=path_to_image_html)), unsafe_allow_html=True)
+        formatted_dict = {}
+        for i in new_data.columns:
+            formatted_dict[i]=path_to_image_html
+
+        st.markdown(new_data.to_html(escape=False,formatters=formatted_dict), unsafe_allow_html=True)
+        st.markdown('#')
+        
+        st.subheader('Filtered Table')
+        col3, col4, col5, col6 = st.columns(4)
+        with col3:
+            project_filter = st.selectbox('Project', new_data.columns)
+        with col4:
+            st.empty
+        with col5:
+            st.empty
+        with col6:
+            st.empty
+        filtered_data = data[data.Team == project_filter]
+        st.markdown(filtered_data.to_html(escape=False,formatters=dict(Team_work=path_to_image_html,
+                                                                       Pawns_or_Players=path_to_image_html,
+                                                                       Delivering_Value_Being_Valued=path_to_image_html,
+                                                                       Speed=path_to_image_html,
+                                                                       Learning=path_to_image_html,
+                                                                       Fun=path_to_image_html)), unsafe_allow_html=True)
         st.markdown('#')
         st.subheader('All user data')
         st.dataframe(data)
