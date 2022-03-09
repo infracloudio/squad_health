@@ -58,6 +58,44 @@ def score(data, question):
     elif (neg == pos):
         return 'Neutral'
 
+def render_radios(disabled=False):
+    questions = ["1) Team work",
+                "2) Pawns or Players",
+                "3) Delivery Value / Being Valued",
+                "4) Speed",
+                "5) Learning",
+                "6) Fun"]
+    smiley_response = ['No Response', 'Happy 🙂', 'Neutral 😐', 'Sad 😞']
+    response_dict = {
+        'No Response' : 'na',
+        'Happy 🙂' : 'Positive',
+        'Neutral 😐' : 'Neutral',
+        'Sad 😞' : 'Negative'
+    }
+    response_list = []
+    col1, col2 = st.columns(2)
+    if not disabled:
+        for i in range(len(questions)):
+            if i < 3:
+                with col1:
+                    st.subheader(questions[i])
+                    response_list.append(response_dict[st.radio("Select your response: ", smiley_response, key=i)])
+            else:
+                with col2:
+                    st.subheader(questions[i])
+                    response_list.append(response_dict[st.radio("Select your response: ", smiley_response, key=i)])
+    else:
+        for i in range(len(questions)):
+            if i < 3:
+                with col1:
+                    st.subheader(questions[i])
+                    response_list.append(response_dict[st.radio("Select your response: ", smiley_response, key=i, disabled=True)])
+            else:
+                with col2:
+                    st.subheader(questions[i])
+                    response_list.append(response_dict[st.radio("Select your response: ", smiley_response, key=i, disabled=True)])
+    return response_list
+
 def main_page(user_email, user_name):
     today = date.today()
 
@@ -68,67 +106,34 @@ def main_page(user_email, user_name):
     team_data = pd.read_csv('teams.csv')
     page = build_sidebar(user_email)
     team_names = list(team_data.Team.unique())
-    
+    responses = []
 
     if(page == "Questionaire"):
-        questions = ["1) Team work",
-                "2) Pawns or Players",
-                "3) Delivery Value / Being Valued",
-                "4) Speed",
-                "5) Learning",
-                "6) Fun"]
-
         
         st.write('<h3> Select your team: </h3>', unsafe_allow_html=True)
         current_team = st.selectbox("You can add responses for multiple teams", team_names)
-                
-        response = ['Positive', 'Neutral', 'Negative']
         
-        col1, col2 = st.columns(2)
+        if(not data[(data.Email == user_email)&(data.Team == current_team)].empty):
+            responses = render_radios(disabled=True)
+        else:
+            responses = render_radios()
 
-        with col1:
-            st.subheader(questions[0])
-            q1 = st.radio("Select your response: ", response, key=0)
-            #q1 = response[q1_radio]
-
-            
-            st.subheader(questions[1])
-            q2 = st.radio("Select your response: ", response, key=1)
-            #q2 = response[q2_radio]
-            
-            st.subheader(questions[2])
-            q3 = st.radio("Select your response: ", response, key=2)
-            #q3 = response[q3_radio]
-
-        with col2:
-            st.subheader(questions[3])
-            q4 = st.radio("Select your response: ", response, key=3)
-            #q3 = response[q3_radio]
-
-            st.subheader(questions[4])
-            q5 = st.radio("Select your response: ", response, key=4)
-            #q3 = response[q3_radio]
-
-            st.subheader(questions[5])
-            q6 = st.radio("Select your response: ", response, key=5)
-            #q3 = response[q3_radio]
-        
         st.write('')
         if(st.button("Save Your Response")):
-            if(not data[(data.Email == user_email)&(data.Team == current_team)].empty):
-                st.error('Data Already Exists !!')
+            if 'na' in responses:
+                st.error('Please respond to all questions')
             else:
                 data = data.append({
                             'Date': today,
                             'Email': user_email,
                             'Name': user_name,
                             'Team': current_team,
-                            'Team_work': q1,
-                            'Pawns_or_Players': q2,
-                            'Delivering_Value_Being_Valued': q3,
-                            'Speed': q4,
-                            'Learning': q5,
-                            'Fun': q6
+                            'Team_work': responses[0],
+                            'Pawns_or_Players': responses[1],
+                            'Delivering_Value_Being_Valued': responses[2],
+                            'Speed': responses[3],
+                            'Learning': responses[4],
+                            'Fun': responses[5]
                             }, ignore_index=True)
                 data.to_csv('demo.csv', index=False)
                 

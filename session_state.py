@@ -1,4 +1,10 @@
-from streamlit.report_thread import get_report_ctx
+try:
+    from streamlit.script_run_context import get_script_run_ctx
+except ModuleNotFoundError:
+    # streamlit < 1.4
+    from streamlit.report_thread import (  # type: ignore
+        get_report_ctx as get_script_run_ctx,
+    )
 import streamlit as st
 
 
@@ -56,6 +62,6 @@ def get(**kwargs):
     'Mary'
 
     """
-    ctx = get_report_ctx()
+    ctx = get_script_run_ctx()
     id = ctx.session_id
     return get_session(id, **kwargs)
