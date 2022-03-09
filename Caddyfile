@@ -1,0 +1,3 @@
+squadhealth.corp.infracloud.io {
+	reverse_proxy localhost:8501
+}
