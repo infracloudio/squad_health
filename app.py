@@ -51,7 +51,7 @@ def get_google_creds():
     creds_json = json.load(creds_file)
     client_id = creds_json['web']['client_id']
     client_secret = creds_json['web']['client_secret']
-    redirect_uri = creds_json['web']['redirect_uris'][0]
+    redirect_uri = creds_json['web']['redirect_uris'][2]
     return client_id, client_secret, redirect_uri
 
 if __name__ == '__main__':
