@@ -70,7 +70,7 @@ if __name__ == '__main__':
             code = st.experimental_get_query_params()['code']
         except:
             st.title('InfraCloud Squad Health Application')
-            st.subheader('Please login using your Infracloud Gmail account.')
+            st.subheader('Please login using your InfraCloud Gmail account.')
             st.write(f'''<h1><a target="_self" href="{authorization_url}">Login</a></h1>''', unsafe_allow_html=True)
         else:
             # Verify token is correct:

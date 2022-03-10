@@ -3,7 +3,9 @@ import pandas as pd
 import streamlit as st
 from datetime import date
 
-admin_users = ['runit.misra@infracloud.io', 'gaurav@infracloud.io']
+
+admin_data = pd.read_csv('admins.csv')
+admin_users = list(admin_data.Admins.unique())
 
 def csv_lookup(csv_file, lookup_value):
     file = open(csv_file)
@@ -111,7 +113,7 @@ def main_page(user_email, user_name):
     if(page == "Questionaire"):
         
         col7, col8, col10, col11 = st.columns([0.65,2,1,1])
-        col7.markdown('<h4> Select your team: <h4?', unsafe_allow_html=True)
+        col7.markdown('<h4> Select your team: </h4>', unsafe_allow_html=True)
         current_team = col8.selectbox("You can add responses for multiple teams", team_names)
         col10.empty
         col11.empty
