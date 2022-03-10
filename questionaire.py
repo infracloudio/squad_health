@@ -99,7 +99,7 @@ def render_radios(disabled=False):
 def main_page(user_email, user_name):
     today = date.today()
 
-    st.title("Infracloud Squad Health Application")
+    st.title("InfraCloud Squad Health Application")
     st.write('Refreshing the page will log you out')
 
     data = pd.read_csv('demo.csv')
@@ -110,8 +110,11 @@ def main_page(user_email, user_name):
 
     if(page == "Questionaire"):
         
-        st.write('<h3> Select your team: </h3>', unsafe_allow_html=True)
-        current_team = st.selectbox("You can add responses for multiple teams", team_names)
+        col7, col8, col10, col11 = st.columns([0.65,2,1,1])
+        col7.markdown('<h4> Select your team: <h4?', unsafe_allow_html=True)
+        current_team = col8.selectbox("You can add responses for multiple teams", team_names)
+        col10.empty
+        col11.empty
         
         if(not data[(data.Email == user_email)&(data.Team == current_team)].empty):
             responses = render_radios(disabled=True)
@@ -120,7 +123,9 @@ def main_page(user_email, user_name):
 
         st.write('')
         if(st.button("Save Your Response")):
-            if 'na' in responses:
+            if current_team == '-':
+                st.error('Please select your Team')
+            elif 'na' in responses:
                 st.error('Please respond to all questions')
             else:
                 data = data.append({
@@ -151,7 +156,6 @@ def main_page(user_email, user_name):
         for tm in teams:
             for q in range(len(questions)):
                 resp = score(data[data.Team == tm], questions[q])
-                # resp = data[data.Team == tm][questions[q]].mode()[0]
                 rate.append(resp)
             storage[tm] = rate
             rate = []
