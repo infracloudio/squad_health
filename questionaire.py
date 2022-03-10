@@ -161,7 +161,7 @@ def main_page(user_email, user_name):
         for i in new_data.columns:
             formatted_dict[i]=path_to_image_html
 
-        st.markdown(new_data.to_html(escape=False,formatters=formatted_dict), unsafe_allow_html=True)
+        st.markdown('<div style="overflow-x:auto">'+new_data.to_html(escape=False,formatters=formatted_dict)+'</div>', unsafe_allow_html=True)
         st.markdown('#')
         
         st.subheader('Filtered Table')
