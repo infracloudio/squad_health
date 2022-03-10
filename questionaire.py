@@ -99,7 +99,7 @@ def render_radios(disabled=False):
 def main_page(user_email, user_name):
     today = date.today()
 
-    st.title("Infracloud Squad Health Application")
+    st.title("InfraCloud Squad Health Application")
     st.write('Refreshing the page will log you out')
 
     data = pd.read_csv('demo.csv')
@@ -110,7 +110,7 @@ def main_page(user_email, user_name):
 
     if(page == "Questionaire"):
         
-        col7, col8, col10, col11 = st.columns([1,2,1,1])
+        col7, col8, col10, col11 = st.columns([0.65,2,1,1])
         col7.markdown('<h4> Select your team: <h4?', unsafe_allow_html=True)
         current_team = col8.selectbox("You can add responses for multiple teams", team_names)
         col10.empty
@@ -156,7 +156,6 @@ def main_page(user_email, user_name):
         for tm in teams:
             for q in range(len(questions)):
                 resp = score(data[data.Team == tm], questions[q])
-                # resp = data[data.Team == tm][questions[q]].mode()[0]
                 rate.append(resp)
             storage[tm] = rate
             rate = []

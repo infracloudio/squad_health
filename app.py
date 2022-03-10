@@ -14,6 +14,7 @@ hide_streamlit_style = """
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         .css-18e3th9 {padding: 0rem 1rem 10rem;}
+        h4 {padding: 2.25rem 0px 1rem;}
         </style>
         """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
@@ -68,7 +69,7 @@ if __name__ == '__main__':
         try:
             code = st.experimental_get_query_params()['code']
         except:
-            st.title('Infracloud Squad Health Application')
+            st.title('InfraCloud Squad Health Application')
             st.subheader('Please login using your Infracloud Gmail account.')
             st.write(f'''<h1><a target="_self" href="{authorization_url}">Login</a></h1>''', unsafe_allow_html=True)
         else:
@@ -79,14 +80,14 @@ if __name__ == '__main__':
                                        redirect_uri=redirect_uri,
                                        code=code))
             except:
-                st.title('Infracloud Squad Health Application')
+                st.title('InfraCloud Squad Health Application')
                 st.subheader('You have refreshed the page and have been logged out.')
                 st.write(f'''<h1><a target="_self" href="{authorization_url}">Login</a></h1>''', unsafe_allow_html=True)
             else:
                 # Check if token has expired:
                 if token.is_expired():
                     if token.is_expired():
-                        st.title('Infracloud Squad Health Application')
+                        st.title('InfraCloud Squad Health Application')
                         st.subheader('The Session token has expired. Please login again')
                         st.sidebar.write(f'''<h1><a target="_self" href="{authorization_url}">Login</a></h1>''', unsafe_allow_html=True)
                 else:
