@@ -120,7 +120,9 @@ def main_page(user_email, user_name):
 
         st.write('')
         if(st.button("Save Your Response")):
-            if 'na' in responses:
+            if current_team == '-':
+                st.error('Please select your Team')
+            elif 'na' in responses:
                 st.error('Please respond to all questions')
             else:
                 data = data.append({
