@@ -110,8 +110,11 @@ def main_page(user_email, user_name):
 
     if(page == "Questionaire"):
         
-        st.write('<h3> Select your team: </h3>', unsafe_allow_html=True)
-        current_team = st.selectbox("You can add responses for multiple teams", team_names)
+        col7, col8, col10, col11 = st.columns([1,2,1,1])
+        col7.markdown('<h4> Select your team: <h4?', unsafe_allow_html=True)
+        current_team = col8.selectbox("You can add responses for multiple teams", team_names)
+        col10.empty
+        col11.empty
         
         if(not data[(data.Email == user_email)&(data.Team == current_team)].empty):
             responses = render_radios(disabled=True)
