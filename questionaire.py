@@ -7,6 +7,9 @@ from datetime import date
 admin_data = pd.read_csv('admins.csv')
 admin_users = list(admin_data.Admins.unique())
 
+def df_to_csv(df):
+    return df.to_csv().encode('utf-8')
+
 def csv_lookup(csv_file, lookup_value):
     file = open(csv_file)
     for row in reader(file):
@@ -104,7 +107,7 @@ def main_page(user_email, user_name):
     st.title("InfraCloud Squad Health Application")
     st.write('Refreshing the page will log you out')
 
-    data = pd.read_csv('demo.csv')
+    data = pd.read_csv('master_data.csv')
     team_data = pd.read_csv('teams.csv')
     page = build_sidebar(user_email)
     team_names = list(team_data.Team.unique())
@@ -142,8 +145,7 @@ def main_page(user_email, user_name):
                             'Learning': responses[4],
                             'Fun': responses[5]
                             }, ignore_index=True)
-                data.to_csv('demo.csv', index=False)
-                
+                data.to_csv('master_data.csv', index=False)
                 st.success('Response has been recorded')
                 st.subheader('Your responses so far:')
                 st.dataframe(data[data.Email == user_email])
@@ -168,6 +170,13 @@ def main_page(user_email, user_name):
             formatted_dict[i]=path_to_image_html
 
         st.markdown('<div style="overflow-x:auto">'+new_data.to_html(escape=False,formatters=formatted_dict)+'</div>', unsafe_allow_html=True)
+        new_data_csv = df_to_csv(new_data)
+        st.download_button(
+            label="Download as CSV",
+            data=new_data_csv,
+            file_name='traffic_light.csv',
+            mime='text/csv'
+        )
         st.markdown('#')
         
         st.subheader('Filtered Table')
@@ -190,5 +199,5 @@ def main_page(user_email, user_name):
         st.markdown('#')
         st.subheader('All user data')
         st.dataframe(data)
-        with open('demo.csv') as dl:
-            st.download_button('Download data as CSV', dl, 'data.csv', 'text/csv')
+        with open('master_data.csv') as dl:
+            st.download_button('Download as CSV', dl, 'data.csv', 'text/csv')
