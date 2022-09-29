@@ -19,6 +19,7 @@ hide_streamlit_style = """
         """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+
 async def write_authorization_url(client,
                                   redirect_uri):
     authorization_url = await client.get_authorization_url(
@@ -41,19 +42,22 @@ async def get_email(client,
     _, user_email = await client.get_id_email(token)
     return user_email
 
+
 async def get_name(id_token):
     query = {'id_token': id_token}
     resposne = requests.get('https://www.googleapis.com/oauth2/v3/tokeninfo', params=query)
     user_name = resposne.json()['name']
     return user_name
 
+
 def get_google_creds():
     creds_file = open('google_client_creds.json')
     creds_json = json.load(creds_file)
     client_id = creds_json['web']['client_id']
     client_secret = creds_json['web']['client_secret']
-    redirect_uri = creds_json['web']['redirect_uris'][2]
+    redirect_uri = creds_json['web']['redirect_uris'][0]
     return client_id, client_secret, redirect_uri
+
 
 if __name__ == '__main__':
     client_id, client_secret, redirect_uri = get_google_creds()
@@ -89,7 +93,8 @@ if __name__ == '__main__':
                     if token.is_expired():
                         st.title('InfraCloud Squad Health Application')
                         st.subheader('The Session token has expired. Please login again')
-                        st.sidebar.write(f'''<h1><a target="_self" href="{authorization_url}">Login</a></h1>''', unsafe_allow_html=True)
+                        st.sidebar.write(f'''<h1><a target="_self" href="{authorization_url}">Login</a></h1>''',
+                                         unsafe_allow_html=True)
                 else:
                     session_state.token = token
                     user_email = asyncio.run(
@@ -102,7 +107,7 @@ if __name__ == '__main__':
                     session_state.user_email = user_email
                     session_state.user_name = user_name
                     main_page(user_email=session_state.user_email,
-                         user_name=session_state.user_name)
+                              user_name=session_state.user_name)
     else:
         main_page(user_email=session_state.user_email,
-             user_name=session_state.user_name)
+                  user_name=session_state.user_name)

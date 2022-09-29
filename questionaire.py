@@ -3,24 +3,40 @@ import pandas as pd
 import streamlit as st
 from datetime import date
 
-
+'''
+Admin Users taken from admins.csv file
+'''
 admin_data = pd.read_csv('admins.csv')
 admin_users = list(admin_data.Admins.unique())
 
+'''
+Utility function to convert DataFrame
+to CSV
+'''
 def df_to_csv(df):
     return df.to_csv().encode('utf-8')
 
+'''
+Utility function to lookup 
+a particular value in a CSV
+'''
 def csv_lookup(csv_file, lookup_value):
     file = open(csv_file)
     for row in reader(file):
         if lookup_value in row[0]:
             return row[1]
 
+'''
+Check if a given user is an admin or not
+'''
 def is_admin(user_email):
     if user_email in admin_users:
         return True
     return False
 
+'''
+Build the streamlit sidebar conditionally if user is admin
+'''
 def build_sidebar(user_email):
     if is_admin(user_email):
         sidebar = st.sidebar.selectbox("Select", ['Questionaire', 'Admin'])
@@ -28,6 +44,10 @@ def build_sidebar(user_email):
         sidebar = st.sidebar.selectbox("Select", ['Questionaire'])
     return sidebar
 
+'''
+Convert words "Negative", "Positive" or "Neutral" to image paths of 
+green, red or yellow dots that can be embedded in html
+'''
 def path_to_image_html(word='Positive'):
     score = {'Positive': 'https://upload.wikimedia.org/wikipedia/commons/2/2d/Basic_green_dot.png',
         'Negative': 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Basic_red_dot.png',
@@ -35,6 +55,11 @@ def path_to_image_html(word='Positive'):
     path = score[word]
     return '<img src="'+ path + '" width="30" >'
 
+'''
+Determine the overall sentiment score of a project with individual scores of
+the members. Negative score has the highest weight to make sure negative
+experiences are not overshadowed by majority positive experiences
+'''
 def score(data, question):
     
     all_rates = list(data[question])
@@ -63,6 +88,9 @@ def score(data, question):
     elif (neg == pos):
         return 'Neutral'
 
+'''
+Render the questions and the radio buttons in the questionaire
+'''
 def render_radios(disabled=False):
     questions = ["1) Team work",
                 "2) Pawns or Players",
@@ -121,13 +149,13 @@ def main_page(user_email, user_name):
         col10.empty
         col11.empty
         
-        if(not data[(data.Email == user_email)&(data.Team == current_team)].empty):
+        if pd.to_datetime(data.Date[(data.Email == user_email)&(data.Team == current_team)]).dt.month.max() == date.today().month and pd.to_datetime(data.Date[(data.Email == user_email)&(data.Team == current_team)]).dt.year.max() == date.today().year:
             responses = render_radios(disabled=True)
         else:
             responses = render_radios()
 
         st.write('')
-        if(st.button("Save Your Response")):
+        if st.button("Save Your Response"):
             if current_team == '-':
                 st.error('Please select your Team')
             elif 'na' in responses:
@@ -164,7 +192,6 @@ def main_page(user_email, user_name):
             storage[tm] = rate
             rate = []
         new_data = pd.DataFrame(storage, index=questions)
-        st.subheader('Traffic light view')
         formatted_dict = {}
         for i in new_data.columns:
             formatted_dict[i]=path_to_image_html
